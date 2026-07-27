@@ -1,0 +1,17 @@
+{
+  "total_scanned": 10079,
+  "wallets_checked": 376,
+  "wallets_with_balance": 1,
+  "results": [
+    {
+      "source_type": "mnemonic",
+      "source_value": "praise you muffin lion enable neck grocery crumble super myself license ghost",
+      "chain": "eth",
+      "address": "0x296E6b249637aF0E76a0215e5bb73A31bF80F64c",
+      "balance": 4e-15,
+      "repo": "bitcoinjs/bitcoinjs-lib",
+      "file": "test/integration/bip32.spec.ts",
+      "line": 28
+    }
+  ]
+}
