@@ -334,31 +334,6 @@ def check_btc_balance(address: str) -> float:
     return 0.0
 
 
-def check_eth_balance(address: str) -> float:
-    try:
-        time.sleep(0.05)  # Rate limiting
-        payload = json.dumps({
-            "jsonrpc": "2.0",
-            "method": "eth_getBalance",
-            "params": [address, "latest"],
-            "id": 1
-        }).encode()
-        req = urllib.request.Request(
-            "https://ethereum-rpc.publicnode.com",
-            data=payload,
-            headers={"Content-Type": "application/json", "User-Agent": "wallet-checker"}
-        )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read())
-            if "result" not in data:
-                return 0.0
-            balance_wei = int(data["result"], 16)
-            return balance_wei / 1e18
-    except Exception as e:
-        print(f"  Warning: ETH API error for {address}: {e}", file=sys.stderr)
-    return 0.0
-
-
 ETH_RPC_ENDPOINTS = [
     "https://ethereum-rpc.publicnode.com",
     "https://eth-mainnet.public.blastapi.io",
