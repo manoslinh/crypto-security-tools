@@ -152,10 +152,15 @@ def convertbits(data: bytes, frombits: int, tobits: int) -> list[int]:
     return ret
 
 
+def bech32_hrp_expand(hrp: str) -> list[int]:
+    """Expand HRP for bech32 encoding per BIP173."""
+    return [ord(x) >> 5 for x in hrp] + [0] + [ord(x) & 31 for x in hrp]
+
+
 def bech32_create_checksum(hrp: str, data: list[int]) -> list[int]:
     CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
-    values = [ord(x) for x in hrp] + [0] + data + [0, 0, 0, 0, 0, 0]
-    polymod = bech32_polymod(values + [0, 0, 0, 0, 0, 0]) ^ 1
+    values = bech32_hrp_expand(hrp) + data + [0, 0, 0, 0, 0, 0]
+    polymod = bech32_polymod(values) ^ 1
     return [(polymod >> 5 * (5 - i)) & 31 for i in range(6)]
 
 
@@ -181,7 +186,7 @@ class HDKey:
         self.index = index
 
     def fingerprint(self) -> bytes:
-        return ripemd160(sha256(self.key))[:4]
+        return ripemd160(sha256(self.get_public_key()))[:4]
 
     @classmethod
     def from_seed(cls, seed: bytes) -> "HDKey":
@@ -333,13 +338,6 @@ def private_key_to_eth_address(key_bytes: bytes) -> str:
         else:
             checksummed += char.lower()
     return "0x" + checksummed
-
-
-def keccak256(data: bytes) -> bytes:
-    """Keccak-256 hash (Ethereum uses this, not standard SHA-3)."""
-    # Simplified - use hashlib with SHA3-256 as approximation
-    # For production, use pysha3 or pycryptodome
-    return hashlib.sha3_256(data).digest()
 
 
 def hex_to_eth_address(hex_key: str) -> str:
